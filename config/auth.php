@@ -72,20 +72,24 @@ return [
     */
 
     'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', User::class),
+
+        'users'=>[
+            'driver'=>'eloquent',
+            'model'=>App\Models\User::class,
         ],
 
-        'owners' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+
+        'owners'=>[
+            'driver'=>'eloquent',
+            'model'=>App\Models\User::class,
         ],
 
-        'subusers' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\SubUser::class,
+
+        'subusers'=>[
+            'driver'=>'eloquent',
+            'model'=>App\Models\SubUser::class,
         ],
+
     ],
 
     /*
@@ -107,12 +111,20 @@ return [
     |
     */
 
-    'passwords' => [
-        'users' => [
-            'provider' => 'users',
-            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
-            'expire' => 60,
-            'throttle' => 60,
+    'passwords'=>[
+        'owners'=>[
+            'provider'=>'owners',
+            'table'=>'password_reset_tokens',
+            'expire'=>60,
+            'throttle'=>60,
+        ],
+
+
+        'subusers'=>[
+            'provider'=>'subusers',
+            'table'=>'password_reset_tokens',
+            'expire'=>60,
+            'throttle'=>60,
         ],
     ],
 
