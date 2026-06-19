@@ -1,15 +1,21 @@
 <?php
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Models\SubUser;
-use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\AuthLoginRequest;
+use App\Http\Requests\SendResetRequest;
+use App\Http\Requests\UpdatePasswordRequest;
+
+
+// Models
+use App\Models\SubUser;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -20,39 +26,30 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::guard('owner')->check() || Auth::guard('subuser')->check()) {
-
             return redirect()->route('admin.dashboard');
-
         }
+        
         return view('login');
     }
 
     /**
      * Login
      */
-    public function login(Request $request)
+    public function login(AuthLoginRequest $request)
     {
 
-        $credentials = $request->validate([
-            'email'    => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $credentials = $request->validated();
 
         $throttleKey = Str::lower($request->email) . '|' . $request->ip();
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-
-            return back()->withErrors([
-                'email' => 'Too many login attempts. Try again after 5 minutes.',
-            ]);
+            return back()->withErrors(['email' => 'Too many login attempts. Try again after 5 minutes.',]);
         }
 
         if (Auth::guard('owner')->attempt($credentials)) {
 
             RateLimiter::clear($throttleKey);
-
             $request->session()->regenerate();
-
             session(['guard' => 'owner']);
 
             return redirect()->route('admin.dashboard');
@@ -61,9 +58,7 @@ class AuthController extends Controller
         if (Auth::guard('subuser')->attempt($credentials)) {
 
             RateLimiter::clear($throttleKey);
-
             $request->session()->regenerate();
-
             session(['guard' => 'subuser']);
 
             return redirect()->route('admin.dashboard');
@@ -71,9 +66,7 @@ class AuthController extends Controller
 
         RateLimiter::hit($throttleKey, 300);
 
-        return back()->withErrors([
-            'email' => 'Invalid login credentials',
-        ]);
+        return back()->withErrors(['email' => 'Invalid login credentials',]);
     }
 
     /**
@@ -90,7 +83,6 @@ class AuthController extends Controller
         }
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect()->route('admin.show');
@@ -107,52 +99,33 @@ class AuthController extends Controller
     /**
      * Send reset link
      */
-    public function sendReset(Request $request)
+    public function sendReset(SendResetRequest $request)
     {
 
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
+        $email = $request->validated()['email'];
 
         // Check Owner
-        $owner = User::where('email', $request->email)->first();
+        $owner = User::where('email', $email)->first();
 
         if ($owner) {
 
-            Password::broker('owners')
-                ->sendResetLink([
-                    'email' => $request->email,
-                ]);
+            Password::broker('owners')->sendResetLink(['email' => $request->email,]);
 
-            return back()->with(
-                'success',
-                'Reset link sent to your email'
-            );
-
+            return back()->with('success','Reset link sent to your email');
         }
 
         // Check SubUser
-        $subuser = SubUser::where('email', $request->email)->first();
+        $subuser = SubUser::where('email', $email)->first();
 
         if ($subuser) {
 
-            Password::broker('subusers')
-                ->sendResetLink([
-                    'email' => $request->email,
-                ]);
+            Password::broker('subusers')->sendResetLink(['email' => $request->email,]);
 
-            return back()->with(
-                'success',
-                'Reset link sent to your email'
-            );
+            return back()->with('success','Reset link sent to your email');
 
         }
 
-        return back()->withErrors([
-
-            'email' => 'Email not found',
-
-        ]);
+        return back()->withErrors(['email' => 'Email not found',]);
 
     }
 
@@ -169,21 +142,13 @@ class AuthController extends Controller
     /**
      * Update Password
      */
-    public function updatePassword(Request $request)
+    public function updatePassword(UpdatePasswordRequest $request)
     {
 
-        $request->validate([
-            'token'    => ['required'],
-            'email'    => ['required', 'email'],
-            'password' => ['required', 'min:8', 'confirmed'],
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
+        $data = $request->validated();
+        $user = User::where('email', $data['email'])->first();
         if (! $user) {
-
-            $user = SubUser::where('email', $request->email)->first();
-
+            $user = SubUser::where('email', $data['email'])->first();
         }
 
         if (! $user) {
@@ -194,16 +159,16 @@ class AuthController extends Controller
 
         }
 
-        $user->password = Hash::make($request->password);
+        $user->password = Hash::make($data['password']);
 
         $user->save();
 
         return redirect()
-            ->route('admin.show')
-            ->with(
-                'success',
-                'Password changed successfully'
-            );
+               ->route('admin.show')
+               ->with(
+                    'success',
+                    'Password changed successfully'
+                );
     }
 
 }
