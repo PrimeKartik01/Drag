@@ -9,9 +9,6 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
-
-
-
 .login-page {
 
     background-image: url('../../public/images/login-bg.avif');
@@ -269,6 +266,7 @@ body {
 .main-area {
     margin-left: var(--sidebar-w);
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     min-height: 100vh;

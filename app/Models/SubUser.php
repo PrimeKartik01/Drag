@@ -4,10 +4,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Notifications\Notifiable;
 
 class SubUser extends Authenticatable
 {
-    use CanResetPassword;
+    use CanResetPassword, Notifiable;
 
     protected $table = 'subusers';
 
@@ -17,9 +18,15 @@ class SubUser extends Authenticatable
         'password',
         'designation',
         'phone',
+        'last_activity_at',
+        'session_id',
     ];
 
     protected $hidden = [
         'password',
+    ];
+
+    protected $casts = [
+        'last_activity_at' => 'datetime',
     ];
 }

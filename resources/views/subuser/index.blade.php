@@ -32,20 +32,26 @@
 
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm px-5 py-4 mb-5">
 
-                <div class="flex flex-col sm:flex-row justify-between gap-4">
+                <div class="flex flex-col justify-between gap-4">
 
-                    <form method="GET" action="{{ route('subuser.index') }}" class="flex gap-3">
+                    <form method="GET" action="{{ route('subuser.index') }}"
+                        class="flex flex-col md:flex-row gap-3 w-full">
 
-                        <div class="relative">
+                        <div class="relative w-full">
                             <x-icons.search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input type="text" name="search" value="{{ request('search') }}"
                                 placeholder="Search name or email"
                                 class="w-full pl-10 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
 
-                        <button class="px-5 py-2.5 bg-gray-900 text-white text-sm rounded-xl">
+                        <button class="w-full md:w-auto px-5 py-2.5 bg-gray-900 text-white text-sm rounded-xl">
                             Search
                         </button>
+
+                        <a href="{{ route('subuser.index') }}"
+                            class="w-full md:w-auto px-5 py-2.5 border border-gray-200 text-gray-600 text-sm rounded-xl hover:bg-gray-50 text-center">
+                            Reset
+                        </a>
 
                     </form>
 
@@ -58,20 +64,39 @@
 
             </div>
 
+            <div id="tableSkeleton" class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+
+                <div class="p-5 space-y-4 animate-pulse">
+
+                    @for ($i = 0; $i < ($subusers->perPage() ?? 10); $i++)
+                        <div class="grid grid-cols-6 gap-4 items-center">
+
+                            <div class="h-4 bg-gray-200 rounded"></div>
+                            <div class="h-4 bg-gray-200 rounded"></div>
+                            <div class="h-4 bg-gray-200 rounded"></div>
+                            <div class="h-4 bg-gray-200 rounded"></div>
+                            <div class="h-4 bg-gray-200 rounded"></div>
+                            <div class="h-4 bg-gray-200 rounded"></div>
+
+                        </div>
+                    @endfor
+
+                </div>
+
+            </div>
 
 
-            <div class="hidden sm:block bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div id="userTable" class="hidden bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
                 <div class="overflow-x-auto">
 
-                    <table class="w-full">
+                    <table class="w-full whitespace-nowrap">
 
                         <thead>
                             <tr class="bg-gray-900">
                                 <th class="px-5 py-3.5 text-left text-xs font-bold text-gray-400 uppercase">#</th>
                                 <th class="px-4 py-3.5 text-left text-xs font-bold text-gray-400 uppercase">User</th>
                                 <th class="px-4 py-3.5 text-left text-xs font-bold text-gray-400 uppercase">Phone</th>
-                                <th class="px-4 py-3.5 text-left text-xs font-bold text-gray-400 uppercase">Designation</th>
                                 <th class="px-4 py-3.5 text-left text-xs font-bold text-gray-400 uppercase">Role</th>
                                 <th class="px-4 py-3.5 text-left text-xs font-bold text-gray-400 uppercase">Status</th>
                                 <th class="px-5 py-3.5 text-right text-xs font-bold text-gray-400 uppercase">Actions</th>
@@ -101,22 +126,17 @@
 
                                     <td class="px-4 py-3.5 text-sm text-gray-500">{{ $user->phone }}</td>
 
-                                    <td class="px-4 py-3.5">
-                                        <span
-                                            class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-semibold">
-                                            {{ $user->designation }}
-                                        </span>
-                                    </td>
-
                                     <td class="px-4 py-3.5 text-sm text-gray-600">{{ ucfirst($user->role) }}</td>
 
                                     <td class="px-4 py-3.5">
-                                        @if ($user->status == 'active')
-                                            <span
-                                                class="px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-xs font-semibold">Active</span>
+                                        @if ($user->last_activity_at && $user->last_activity_at->gt(now()->subMinutes(5)))
+                                            <span class="px-2 py-1 bg-green-50 text-green-600 rounded-lg text-xs">
+                                                Online
+                                            </span>
                                         @else
-                                            <span
-                                                class="px-2.5 py-1 rounded-lg bg-red-50 text-red-600 text-xs font-semibold">Inactive</span>
+                                            <span class="px-2 py-1 bg-gray-50 text-gray-500 rounded-lg text-xs">
+                                                Offline
+                                            </span>
                                         @endif
                                     </td>
 
@@ -124,19 +144,19 @@
                                     <td class="px-5 py-3.5">
                                         <div class="flex justify-end gap-2">
 
-                                            {{-- <a href="{{ route('subuser.edit', $user->id) }}"
+                                            <a href="{{ route('subuser.edit', $user->id) }}"
                                                 class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-xs">
-                                                <x-icons.edit class="w-3.5 h-3.5" /> Edit
-                                            </a> --}}
+                                                <x-icons.edit class="w-3.5 h-3.5" />
+                                            </a>
 
-                                            {{-- <form action="{{ route('subuser.destroy', $user->id) }}" method="POST">
+                                            <form action="{{ route('subuser.delete', $user->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button onclick="return confirm('Delete {{ $user->name }}?')"
                                                     class="px-3 py-1.5 rounded-lg bg-red-50 text-red-500 text-xs">
-                                                    <x-icons.trash class="w-3.5 h-3.5" /> Delete
+                                                    <x-icons.trash class="w-3.5 h-3.5" />
                                                 </button>
-                                            </form> --}}
+                                            </form>
 
                                         </div>
                                     </td>
@@ -169,5 +189,14 @@
 
 
         </div>
+        <script>
+            window.addEventListener('load', function() {
+
+                document.getElementById('tableSkeleton').style.display = 'none';
+
+                document.getElementById('userTable').classList.remove('hidden');
+
+            });
+        </script>
     </div>
 @endsection

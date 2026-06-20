@@ -13,7 +13,7 @@ use Illuminate\Notifications\Notifiable;
 //password reset
 use Illuminate\Auth\Passwords\CanResetPassword;
 
-#[Fillable(['name', 'email', 'password','designation','phone'])]
+#[Fillable(['name', 'email', 'password','designation','phone', 'session_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {

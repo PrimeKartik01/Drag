@@ -1,17 +1,19 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
+
+// Request
+use Illuminate\Http\Request;
 use App\Http\Requests\AuthLoginRequest;
 use App\Http\Requests\SendResetRequest;
 use App\Http\Requests\UpdatePasswordRequest;
-
 
 // Models
 use App\Models\SubUser;
@@ -28,7 +30,7 @@ class AuthController extends Controller
         if (Auth::guard('owner')->check() || Auth::guard('subuser')->check()) {
             return redirect()->route('admin.dashboard');
         }
-        
+
         return view('login');
     }
 
@@ -39,7 +41,6 @@ class AuthController extends Controller
     {
 
         $credentials = $request->validated();
-
         $throttleKey = Str::lower($request->email) . '|' . $request->ip();
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
@@ -50,7 +51,10 @@ class AuthController extends Controller
 
             RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
+
             session(['guard' => 'owner']);
+            $user = Auth::guard('owner')->user();
+            $user->update(['session_id' => session()->getId()]);
 
             return redirect()->route('admin.dashboard');
         }
@@ -60,6 +64,11 @@ class AuthController extends Controller
             RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
             session(['guard' => 'subuser']);
+            $subuser = Auth::guard('subuser')->user();
+            $subuser->update([
+                'session_id' => session()->getId(),
+                'last_activity_at' => now()
+            ]);
 
             return redirect()->route('admin.dashboard');
         }
@@ -77,11 +86,17 @@ class AuthController extends Controller
         $guard = $request->session()->pull('guard');
 
         if ($guard) {
+            $user = Auth::guard($guard)->user();
+            if ($user) {
+                $user->update([
+                    'session_id' => null
+                ]);
+            }
+
             Auth::guard($guard)->logout();
         } else {
             Auth::logout();
         }
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -111,7 +126,7 @@ class AuthController extends Controller
 
             Password::broker('owners')->sendResetLink(['email' => $request->email,]);
 
-            return back()->with('success','Reset link sent to your email');
+            return back()->with('success', 'Reset link sent to your email');
         }
 
         // Check SubUser
@@ -121,12 +136,10 @@ class AuthController extends Controller
 
             Password::broker('subusers')->sendResetLink(['email' => $request->email,]);
 
-            return back()->with('success','Reset link sent to your email');
-
+            return back()->with('success', 'Reset link sent to your email');
         }
 
         return back()->withErrors(['email' => 'Email not found',]);
-
     }
 
     /**
@@ -156,7 +169,6 @@ class AuthController extends Controller
             return back()->withErrors([
                 'email' => 'User not found',
             ]);
-
         }
 
         $user->password = Hash::make($data['password']);
@@ -164,11 +176,7 @@ class AuthController extends Controller
         $user->save();
 
         return redirect()
-               ->route('admin.show')
-               ->with(
-                    'success',
-                    'Password changed successfully'
-                );
+            ->route('admin.show')
+            ->with('success', 'Password changed successfully');
     }
-
 }

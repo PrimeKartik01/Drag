@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -16,15 +17,41 @@ class CheckAuth
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::guard('owner')->check()) {
+
             Auth::shouldUse('owner');
-            return $next($request);
-        }
-        
-        if (Auth::guard('subuser')->check()) {
-            Auth::shouldUse('subuser');
+            $user = Auth::guard('owner')->user();
+            if ($user->session_id && $user->session_id !== session()->getId()) {
+
+                Auth::guard('owner')->logout();
+
+                return redirect()
+                    ->route('admin.login')
+                    ->with('error', 'Your account was logged in from another device.');
+            }
+
             return $next($request);
         }
 
+
+        if (Auth::guard('subuser')->check()) {
+
+            Auth::shouldUse('subuser');
+            $subuser = Auth::guard('subuser')->user();
+            if ($subuser->session_id && $subuser->session_id !== session()->getId()) {
+
+                Auth::guard('subuser')->logout();
+
+                return redirect()
+                    ->route('admin.login')
+                    ->with('error', 'Your account was logged in from another device.');
+            }
+
+            $subuser->update([
+                'last_activity_at' => now()
+            ]);
+
+            return $next($request);
+        }
         return redirect()->route('admin.login');
     }
 }

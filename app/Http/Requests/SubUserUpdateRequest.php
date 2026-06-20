@@ -22,9 +22,9 @@ class SubUserUpdateRequest extends FormRequest
             'email'       => 'required|email|unique:subusers,email,' . $subuserId,
             'phone'       => 'required|digits:10',
             'password'    => 'nullable|min:6|confirmed',
-            'designation' => 'required|string|max:255',
-            'role'        => 'required|string',
-            'status'      => 'required|in:active,inactive',
+            // 'designation' => 'required|string|max:255',
+            // 'role'        => 'required|string',
+            // 'status'      => 'required|in:active,inactive',
         ];
     }
 

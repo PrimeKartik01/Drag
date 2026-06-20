@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('designation')->default('Owner');
             $table->string('phone')->nullable();
+            $table->string('session_id')->nullable();
             $table->timestamps();
         });
     }

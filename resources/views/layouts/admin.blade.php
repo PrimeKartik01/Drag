@@ -38,9 +38,9 @@
                 <div class="nav-sep"></div>
                 <div class="nav-group-label">Manage</div>
                 <a href="{{ route('subuser.index') }}"
-                    class="nav-item {{ request()->routeIs('admin.*') ? 'active' : '' }}">
+                    class="nav-item {{ request()->routeIs('subuser.*') ? 'active' : '' }}">
                     <x-icons.users stroke-width="2" />
-                    Employees
+                    SubUser
                 </a>
 
             </div>

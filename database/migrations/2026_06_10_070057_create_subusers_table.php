@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('designation')->nullable();
             $table->string('phone')->nullable();
+            $table->string('session_id')->nullable();
+            $table->timestamp('last_activity_at')->nullable();
             $table->timestamps();
         });
     }
