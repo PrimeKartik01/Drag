@@ -41,9 +41,8 @@ class CheckAuth
 
                 Auth::guard('subuser')->logout();
 
-                return redirect()
-                    ->route('admin.login')
-                    ->with('error', 'Your account was logged in from another device.');
+                return redirect()->route('admin.login')
+                       ->with('error', 'Your account was logged in from another device.');
             }
 
             $subuser->update([

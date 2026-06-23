@@ -53,7 +53,7 @@ class SubUserController extends Controller
             Session::flash('success', 'Subuser Created Successfully.');
 
             return redirect()->route('subuser.create');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             Log::error('Subuser Create Failed' . $e->getMessage());
             Session::flash('error', 'Something went wrong while creating the subuser');
@@ -85,7 +85,7 @@ class SubUserController extends Controller
             Session::flash('success', 'Subuser Updated Successfully.');
 
             return redirect()->route('subuser.index');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             Log::error('Subuser Update Failed: ' . $e->getMessage());
             Session::flash('error', 'Something went wrong while updating the subuser');
@@ -94,10 +94,20 @@ class SubUserController extends Controller
         }
     }
 
+    /**
+     * Delete the Sub User
+     */
     public function destroy(SubUser $subuser)
     {
-        $subuser->delete();
+        if($subuser){
+            $subuser->delete();
+            Session::flash('success', 'Subuser Deleted Successfully.');
 
-        return redirect()->route('subuser.index')->with('success', 'Sub User Deleted Successfully');
+            return redirect()->route('subuser.index');
+        } else {
+            Session::flash('error', 'Subuser Not Found.');
+
+            return redirect()->route('subuser.index');
+        }
     }
 }

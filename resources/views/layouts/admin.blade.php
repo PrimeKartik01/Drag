@@ -43,6 +43,12 @@
                     SubUser
                 </a>
 
+                <a href="{{ route('role.index') }}"
+                    class="nav-item {{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                    <x-icons.user-shield stroke-width="2" />
+                    Roles
+                </a>
+
             </div>
 
             <div class="sidebar-footer">

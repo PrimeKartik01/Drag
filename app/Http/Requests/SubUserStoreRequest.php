@@ -20,9 +20,7 @@ class SubUserStoreRequest extends FormRequest
             'email'       => 'required|email|unique:subusers,email',
             'phone'       => 'required|digits:10',
             'password'    => 'required|min:6|confirmed',
-            // 'designation' => 'required|string|max:255',
-            // 'role'        => 'required|string',
-            // 'status'      => 'required|in:active,inactive',
+            'role'        => 'required|string',
         ];
     }
 

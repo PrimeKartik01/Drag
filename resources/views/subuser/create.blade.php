@@ -44,6 +44,14 @@
                             @enderror
                         </div>
 
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Role</label>
+                            <input type="text" name="role" value="{{ old('role') }}" placeholder="Enter user role"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
+                            @error('role')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
 
                         <div>
@@ -54,7 +62,6 @@
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-
 
 
                         <div>

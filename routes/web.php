@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SubUserController;
+use App\Http\Controllers\RoleController;
+
 
 
 Route::get('/',[AuthController::class, 'showLoginForm'])->name('admin.show');
@@ -25,7 +27,16 @@ Route::middleware('checkauth')->group(function(){
   Route::post('/admin/store',[SubUserController::class, 'store'])->name('subuser.store');
   Route::get('/admin/{subuser}/edit',[SubUserController::class, 'edit'])->name('subuser.edit');
   Route::patch('/admin/{subuser}/update',[SubUserController::class, 'update'])->name('subuser.update');
-  Route::delete('/admin/{subuser}/delete',[SubUserController::class, 'delete'])->name('subuser.delete');
+  Route::delete('/admin/{subuser}/delete',[SubUserController::class, 'destroy'])->name('subuser.delete');
+
+
+  Route::get('/admin/role/index',[RoleController::class, 'index'])->name('role.index');
+  Route::get('/admin/role/create',[RoleController::class, 'create'])->name('role.create');
+  Route::post('/admin/role/store',[RoleController::class, 'store'])->name('role.store');
+  Route::get('/admin/role/{role}/edit',[RoleController::class, 'edit'])->name('role.edit');
+  Route::patch('/admin/role/{role}/update',[RoleController::class, 'update'])->name('role.update');
+  Route::delete('/admin/role/{role}/delete',[RoleController::class, 'delete'])->name('role.delete');
+
 
 
 });

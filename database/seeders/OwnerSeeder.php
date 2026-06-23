@@ -13,14 +13,14 @@ class OwnerSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-
-            'name'        => 'Main Owner',
-            'email'       => 'kartikssprime@gmail.com',
-            'password'    =>  Hash::make('12345678'),
-            'designation' => 'Owner',
-            'phone'       => '8287705874',
-
-        ]);
+        User::updateOrCreate(
+            ['email' => 'kartikssprime@gmail.com'],
+            [
+                'name'        => 'Main Owner',
+                'password'    =>  Hash::make('12345678'),
+                'designation' => 'Owner',
+                'phone'       => '8287705874',
+            ]
+        );
     }
 }
