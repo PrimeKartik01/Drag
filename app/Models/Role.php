@@ -16,4 +16,11 @@ class Role extends Model
         return $this->belongsToMany(Permission::class, 'role_permission')->withPivot('table_name');
     }
 
+    /**
+     * A role can belongs to many subusers
+     */
+    public function subusers()
+    {
+        return $this->hasMany(SubUser::class);
+    }
 }

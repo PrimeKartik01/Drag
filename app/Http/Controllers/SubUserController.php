@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Session;
+use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 // Request
 use Illuminate\Http\Request;
@@ -46,20 +47,16 @@ class SubUserController extends Controller
     public function store(SubUserStoreRequest $request)
     {
         try {
-
             $input = $request->validated();
             $input['password'] = Hash::make($input['password']);
             SubUser::create($input);
             Session::flash('success', 'Subuser Created Successfully.');
-
-            return redirect()->route('subuser.create');
         } catch (Exception $e) {
-
             Log::error('Subuser Create Failed' . $e->getMessage());
             Session::flash('error', 'Something went wrong while creating the subuser');
-
-            return redirect()->route('subuser.index');
         }
+
+        return redirect()->route('subuser.create');
     }
 
     public function edit(SubUser $subuser)
@@ -99,15 +96,13 @@ class SubUserController extends Controller
      */
     public function destroy(SubUser $subuser)
     {
-        if($subuser){
+        if ($subuser) {
             $subuser->delete();
             Session::flash('success', 'Subuser Deleted Successfully.');
-
-            return redirect()->route('subuser.index');
         } else {
             Session::flash('error', 'Subuser Not Found.');
-
-            return redirect()->route('subuser.index');
         }
+
+        return redirect()->route('subuser.index');
     }
 }

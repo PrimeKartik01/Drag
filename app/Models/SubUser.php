@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -29,4 +30,12 @@ class SubUser extends Authenticatable
     protected $casts = [
         'last_activity_at' => 'datetime',
     ];
+
+    /**
+     * Subser belongs to a single role
+     */
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 }

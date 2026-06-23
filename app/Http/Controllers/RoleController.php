@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
+
 // Model
-use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Permission;
 
 // Request
-use Illuminate\Http\Request;
+use App\Http\Requests\RoleStoreRequest;
+use App\Http\Requests\RoleUpdateRequest;
 
 // DB
 use Illuminate\Support\Facades\DB;
-
 
 class RoleController extends Controller
 {
@@ -39,23 +43,23 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RoleStoreRequest $request)
     {
+        try {
+            $input = $request->validated();
+            $role = Role::create([
+                'name' => $input['name'],
+                'description' => $input['description'] ?? null,
+            ]);
+            $this->syncRolePermissions($role, $input['permissions'] ?? []);
+            Session::flash('success', 'Role created Successfully');
+        } catch (Exception $e) {
 
-        $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name',
-            'description' => 'nullable|string',
-            'permissions' => 'required|array',
-            'permissions.*' => 'array',
-            'permissions.*.*' => 'exists:permissions,id',
-        ]);
+            Log::error('Role Store Function Failed' . $e->getMessage());
+            Session::flash('error', 'Role Create Failed');
+        }
 
-        $role = Role::create($request->only(['name', 'description']));
-
-        $this->syncRolePermissions($role, $request->input('permissions', []));
-
-        return redirect()->route('role.index')
-            ->with('success', 'Role created successfully');
+        return redirect()->route('role.index');
     }
 
     /**
@@ -63,43 +67,48 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        $permissions = Permission::select('id', 'name', 'slug')->orderBy('name')->get();
-        $tableNames = config('table_access.tables');
+        try {
+            $permissions = Permission::select('id', 'name', 'slug')->orderBy('name')->get();
+            $tableNames = config('table_access.tables');
+            $selectedPermissions = [];
+            foreach ($role->permissions as $permission) {
+                foreach (explode(',', $permission->pivot->table_name) as $table) {
+                    $table = trim($table);
 
-        $selectedPermissions = [];
-        foreach ($role->permissions as $permission) {
-            $tables = explode(',', $permission->pivot->table_name);
-            foreach ($tables as $table) {
-                $table = trim($table);
-                if (! $table) {
-                    continue;
+                    if ($table) {
+                        $selectedPermissions[$table][] = $permission->id;
+                    }
                 }
-
-                $selectedPermissions[$table][] = $permission->id;
             }
-        }
 
-        return view('role.edit', compact('role', 'permissions', 'tableNames', 'selectedPermissions'));
+            return view('role.edit', compact('role', 'permissions', 'tableNames', 'selectedPermissions'));
+        } catch (Exception $e) {
+            Log::error('Role Edit Function Failed: ' . $e->getMessage());
+            Session::flash('error', 'Role Edit Failed');
+
+            return redirect()->route('role.index');
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Role $role)
+    public function update(RoleUpdateRequest $request, Role $role)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
-            'description' => 'nullable|string',
-            'permissions' => 'required|array',
-            'permissions.*' => 'array',
-            'permissions.*.*' => 'exists:permissions,id',
-        ]);
+        try {
+            $input = $request->validated();
+            $role->update([
+                'name' => $input['name'],
+                'description' => $input['description'] ?? null,
+            ]);
+            $this->syncRolePermissions($role, $input['permissions'] ?? []);
+            Session::flash('success', 'Role Updated Successfully');
+        } catch (Exception $e) {
+            Log::error('Role Update Function Failed: ' . $e->getMessage());
+            Session::flash('error', 'Role Updated Failed');
+        }
 
-        $role->update($request->only(['name', 'description']));
-
-        $this->syncRolePermissions($role, $request->input('permissions', []));
-
-        return redirect()->route('role.index')->with('success', 'Role updated successfully');
+        return redirect()->route('role.index');
     }
 
     /**
@@ -107,9 +116,15 @@ class RoleController extends Controller
      */
     public function delete(Role $role)
     {
-        $role->delete();
+        try {
+            $role->delete();
+            Session::flash('success', 'Role Delete Successfully');
+        } catch (Exception $e) {
+            Log::error('Role Delete Function Failed' . $e->getMessage());
+            Session::flash('error', 'Role Deleted Failed');
+        }
 
-        return redirect()->route('role.index')->with('success', 'Role deleted successfully');
+        return redirect()->route('role.index');
     }
 
     private function syncRolePermissions(Role $role, array $permissions): void
