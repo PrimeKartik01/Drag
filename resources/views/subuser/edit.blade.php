@@ -29,16 +29,6 @@
         </div>
 
 
-        @if($errors->any())
-        <div class="mb-5 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
-            <ul class="list-disc pl-5">
-                @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-        @endif
-
 
         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
 
@@ -82,7 +72,7 @@
                         <input type="password" name="password_confirmation" placeholder="Repeat password" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
 
-{{-- 
+
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1.5">Role</label>
                         <select name="role" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -91,15 +81,6 @@
                             <option value="employee" {{ old('role',$subuser->role)=='employee'?'selected':'' }}>Employee</option>
                         </select>
                     </div>
---}}
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Status</label>
-                        <select name="status" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="active" {{ old('status',$subuser->status)=='active'?'selected':'' }}>Active</option>
-                            <option value="inactive" {{ old('status',$subuser->status)=='inactive'?'selected':'' }}>Inactive</option>
-                        </select>
-                    </div> 
 
 
                 </div>

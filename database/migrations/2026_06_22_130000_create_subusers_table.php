@@ -16,7 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('role');
+            $table->foreignId('role_id')
+                  ->nullable()
+                  ->constrained('roles')
+                  ->nullOnDelete();
             $table->string('phone')->nullable();
             $table->string('session_id')->nullable();
             $table->timestamp('last_activity_at')->nullable();

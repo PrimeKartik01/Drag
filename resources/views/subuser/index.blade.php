@@ -126,7 +126,9 @@
 
                                     <td class="px-4 py-3.5 text-sm text-gray-500">{{ $user->phone }}</td>
 
-                                    <td class="px-4 py-3.5 text-sm text-gray-600">{{ ucfirst($user->role) }}</td>
+                                    <td class="px-4 py-3.5 text-sm text-gray-600">
+                                        {{ $user->role?->name ?? 'No Role' }}
+                                    </td>
 
                                     <td class="px-4 py-3.5">
                                         @if ($user->last_activity_at && $user->last_activity_at->gt(now()->subMinutes(5)))

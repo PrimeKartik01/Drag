@@ -44,15 +44,6 @@
                             @enderror
                         </div>
 
-                        <div class="sm:col-span-2">
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Role</label>
-                            <input type="text" name="role" value="{{ old('role') }}" placeholder="Enter user role"
-                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
-                            @error('role')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
 
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email Address</label>
@@ -117,41 +108,26 @@
 
                         </div>
 
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Role</label>
 
-
-
-                        {{-- <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Designation</label>
-                            <input type="text" name="designation" value="{{ old('designation') }}"
-                                placeholder="Property Manager"
+                            <select name="role_id"
                                 class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
-                            @error('designation')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div> --}}
-
-
-
-
-                        {{-- <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">User Role</label>
-
-                            <select name="role"
-                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
 
                                 <option value="">Select Role</option>
-                                <option value="manager">Manager</option>
-                                <option value="agent">Property Agent</option>
-                                <option value="employee">Employee</option>
+
+                                @foreach ($roles as $id => $name)
+                                    <option value="{{ $id }}" {{ old('role_id') == $id ? 'selected' : '' }}>
+                                        {{ $name }}
+                                    </option>
+                                @endforeach
 
                             </select>
 
-                            @error('role')
+                            @error('role_id')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
-
                         </div>
- --}}
 
 
                     </div>

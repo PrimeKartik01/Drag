@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -22,7 +23,7 @@ class SubUserUpdateRequest extends FormRequest
             'email'       => 'required|email|unique:subusers,email,' . $subuserId,
             'phone'       => 'required|digits:10',
             'password'    => 'nullable|min:6|confirmed',
-            'role'        => 'required|string',
+            'role_id'     => 'nullable' |'exists:roles,id',
         ];
     }
 

@@ -12,6 +12,7 @@ use App\Http\Requests\SubUserStoreRequest;
 use App\Http\Requests\SubUserUpdateRequest;
 
 // Model
+use App\Models\Role;
 use App\Models\SubUser;
 use Illuminate\Support\Facades\Log;
 
@@ -23,11 +24,14 @@ class SubUserController extends Controller
      */
     public function index(Request $request)
     {
-        $subusers = SubUser::when($request->search, function ($query) use ($request) {
+        $subusers = SubUser::with('role')
+            ->when($request->search, function ($query) use ($request) {
 
-            $query->where('name', 'like', '%' . $request->search . '%')
-                ->orWhere('email', 'like', '%' . $request->search . '%');
-        })->latest()->paginate(10);
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
+            })
+            ->latest()
+            ->paginate(10);
 
         return view('subuser.index', compact('subusers'));
     }
@@ -38,7 +42,8 @@ class SubUserController extends Controller
      */
     public function create()
     {
-        return view('subuser.create');
+        $roles = Role::pluck('name', 'id');
+        return view('subuser.create', compact('roles'));
     }
 
     /**
