@@ -28,6 +28,7 @@ Route::middleware('checkauth')->group(function(){
   Route::get('/admin/{subuser}/edit',[SubUserController::class, 'edit'])->name('subuser.edit');
   Route::patch('/admin/{subuser}/update',[SubUserController::class, 'update'])->name('subuser.update');
   Route::delete('/admin/{subuser}/delete',[SubUserController::class, 'destroy'])->name('subuser.delete');
+  Route::get('/subuser/status', [SubUserController::class, 'status'])->name('subuser.status');
 
 
   Route::get('/admin/role/index',[RoleController::class, 'index'])->name('role.index');

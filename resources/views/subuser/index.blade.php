@@ -131,15 +131,27 @@
                                     </td>
 
                                     <td class="px-4 py-3.5">
+
                                         @if ($user->last_activity_at && $user->last_activity_at->gt(now()->subMinutes(5)))
-                                            <span class="px-2 py-1 bg-green-50 text-green-600 rounded-lg text-xs">
+                                            <span id="status-{{ $user->id }}"
+                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
+
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+
                                                 Online
+
                                             </span>
                                         @else
-                                            <span class="px-2 py-1 bg-gray-50 text-gray-500 rounded-lg text-xs">
+                                            <span id="status-{{ $user->id }}"
+                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+
+                                                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+
                                                 Offline
+
                                             </span>
                                         @endif
+
                                     </td>
 
 
@@ -199,6 +211,52 @@
                 document.getElementById('userTable').classList.remove('hidden');
 
             });
+            
+            window.addEventListener('load', function() {
+                document.getElementById('tableSkeleton').style.display = 'none';
+                document.getElementById('userTable').classList.remove('hidden');
+            });
+
+            setInterval(() => {
+
+                fetch("{{ route('subuser.status') }}")
+                    .then(response => response.json())
+                    .then(data => {
+
+                        data.forEach(user => {
+
+                            let status = document.getElementById('status-' + user.id);
+
+                            if (status) {
+
+                                let online = user.last_activity_at &&
+                                    new Date(user.last_activity_at) > new Date(Date.now() - 5 * 60 * 1000);
+
+                                if (online) {
+
+                                    status.innerHTML =
+                                        `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Online`;
+
+                                    status.className =
+                                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700";
+
+                                } else {
+
+                                    status.innerHTML =
+                                        `<span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Offline`;
+
+                                    status.className =
+                                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500";
+
+                                }
+
+                            }
+
+                        });
+
+                    });
+
+            }, 1000);
         </script>
     </div>
 @endsection

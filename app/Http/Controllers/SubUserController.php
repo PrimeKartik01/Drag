@@ -110,4 +110,11 @@ class SubUserController extends Controller
 
         return redirect()->route('subuser.index');
     }
+
+    public function status()
+    {
+        $subusers = SubUser::select('id', 'last_activity_at')->get();
+
+        return response()->json($subusers);
+    }
 }

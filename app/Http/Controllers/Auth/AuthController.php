@@ -86,17 +86,31 @@ class AuthController extends Controller
         $guard = $request->session()->pull('guard');
 
         if ($guard) {
+
             $user = Auth::guard($guard)->user();
+
             if ($user) {
-                $user->update([
-                    'session_id' => null
-                ]);
+
+                if ($guard === 'subuser') {
+
+                    $user->update([
+                        'session_id' => null,
+                        'last_activity_at' => null
+                    ]);
+                } else {
+
+                    $user->update([
+                        'session_id' => null
+                    ]);
+                }
             }
 
             Auth::guard($guard)->logout();
         } else {
+
             Auth::logout();
         }
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

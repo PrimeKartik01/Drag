@@ -42,12 +42,15 @@ class CheckAuth
                 Auth::guard('subuser')->logout();
 
                 return redirect()->route('admin.login')
-                       ->with('error', 'Your account was logged in from another device.');
+                    ->with('error', 'Your account was logged in from another device.');
             }
 
-            $subuser->update([
-                'last_activity_at' => now()
-            ]);
+            if (!$subuser->last_activity_at || $subuser->last_activity_at->lt(now()->subMinute())) {
+
+                $subuser->update([
+                    'last_activity_at' => now()
+                ]);
+            }
 
             return $next($request);
         }
