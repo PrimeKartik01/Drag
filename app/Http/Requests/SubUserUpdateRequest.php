@@ -23,7 +23,7 @@ class SubUserUpdateRequest extends FormRequest
             'email'       => 'required|email|unique:subusers,email,' . $subuserId,
             'phone'       => 'required|digits:10',
             'password'    => 'nullable|min:6|confirmed',
-            'role_id'     => 'nullable' |'exists:roles,id',
+            'role_id'     => 'nullable|exists:roles,id',
         ];
     }
 

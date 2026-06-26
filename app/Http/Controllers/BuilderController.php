@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 // Models
 use App\Models\Builder;
@@ -38,7 +39,6 @@ class BuilderController extends Controller
         } catch (Exception $e) {
 
             Log::error('Builder Index Function Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Builder Fetch Failed');
 
             return redirect()->route('builder.index');
@@ -58,7 +58,6 @@ class BuilderController extends Controller
         } catch (Exception $e) {
 
             Log::error('Builder Create Function Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Builder Create Failed');
 
             return redirect()->route('builder.index');
@@ -103,7 +102,6 @@ class BuilderController extends Controller
         } catch (Exception $e) {
 
             Log::error('Builder Edit Function Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Builder Edit Failed');
 
             return redirect()->route('builder.index');
@@ -153,7 +151,6 @@ class BuilderController extends Controller
         } catch (Exception $e) {
 
             Log::error('Builder Show Function Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Builder Details Failed');
 
             return redirect()->route('builder.index');
@@ -167,14 +164,15 @@ class BuilderController extends Controller
     {
         try {
 
+            if ($builder->photo && Storage::disk('public')->exists($builder->photo)) {
+                Storage::disk('public')->delete($builder->photo);
+            }
+
             $builder->delete();
-
-
             Session::flash('success', 'Builder Deleted Successfully');
         } catch (Exception $e) {
 
             Log::error('Builder Delete Function Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Builder Deletion Failed');
         }
 
@@ -186,17 +184,27 @@ class BuilderController extends Controller
     public function bulkDelete(Request $request)
     {
         try {
-            $ids = $request->ids;
 
-            if (!$ids) {
+            $ids = explode(',', $request->ids);
+
+            if (empty($ids)) {
                 Session::flash('error', 'No builders selected');
                 return back();
             }
 
-            Builder::whereIn('id', $ids)->delete();
+            $builders = Builder::whereIn('id', $ids)->get();
 
+            foreach ($builders as $builder) {
+
+                if ($builder->photo && Storage::disk('public')->exists($builder->photo)) {
+                    Storage::disk('public')->delete($builder->photo);
+                }
+            }
+
+            Builder::whereIn('id', $ids)->delete();
             Session::flash('success', 'Selected Builders Deleted Successfully');
         } catch (Exception $e) {
+
             Log::error('Bulk Delete Failed: ' . $e->getMessage());
             Session::flash('error', 'Bulk Delete Failed');
         }

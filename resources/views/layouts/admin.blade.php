@@ -51,7 +51,7 @@
 
                 <a href="{{ route('builder.index') }}"
                     class="nav-item {{ request()->routeIs('builder.*') ? 'active' : '' }}">
-                    <x-icons.user-shield stroke-width="2" />
+                    <x-icons.builder stroke-width="2" />
                     Builder
                 </a>
 

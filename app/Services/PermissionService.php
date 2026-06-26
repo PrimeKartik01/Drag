@@ -22,8 +22,7 @@ class PermissionService
             }
 
             return $user->role->permissions()
-                ->where('slug', $action)
-                ->get()
+                ->where('slug', $action)->get()
                 ->contains(function ($permission) use ($table) {
                     $tables = array_filter(array_map('trim', explode(',', $permission->pivot->table_name ?? '')));
                     return in_array($table, $tables, true);
