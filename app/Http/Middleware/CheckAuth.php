@@ -33,7 +33,7 @@ class CheckAuth
         }
 
 
-        if (Auth::guard('subuser')->check()) {
+        if (Auth::guard('subuser')->check()) {              
 
             Auth::shouldUse('subuser');
             $subuser = Auth::guard('subuser')->user();

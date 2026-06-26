@@ -44,9 +44,15 @@
                 </a>
 
                 <a href="{{ route('role.index') }}"
-                    class="nav-item {{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                    class="nav-item {{ request()->routeIs('role.*') ? 'active' : '' }}">
                     <x-icons.user-shield stroke-width="2" />
                     Roles
+                </a>
+
+                <a href="{{ route('builder.index') }}"
+                    class="nav-item {{ request()->routeIs('builder.*') ? 'active' : '' }}">
+                    <x-icons.user-shield stroke-width="2" />
+                    Builder
                 </a>
 
             </div>
@@ -88,7 +94,7 @@
                         <button type="submit" class="btn btn-outline"
                             style="border-color:#fca5a5; color:#dc2626; margin-left:10px;">
                             <x-icons.logout stroke-width="2.5" />
-                            Logout
+                            <span class="hidden md:block">Logout</span>
                         </button>
                     </form>
                 </div>
@@ -102,6 +108,21 @@
                         <x-icons.check width="10" height="10" stroke="#16a34a" stroke-width="3" />
                     </div>
                     <p style="font-size:13px;color:var(--foreground);flex:1;font-weight:500;">{{ session('success') }}
+                    </p>
+                    <button onclick="this.closest('#flash-message').remove()"
+                        style="background:none;border:none;cursor:pointer;color:var(--muted-fg);display:flex;padding:0">
+                        <x-icons.x width="14" height="14" stroke="currentColor" stroke-width="2" />
+                    </button>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div id="flash-message">
+                    <div
+                        style="width:20px;height:20px;border-radius:50%;background:#fff1f2;border:1px solid #fecdd3;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                        <x-icons.x width="10" height="10" stroke="#dc2626" stroke-width="3" />
+                    </div>
+                    <p style="font-size:13px;color:var(--foreground);flex:1;font-weight:500;">{{ session('error') }}
                     </p>
                     <button onclick="this.closest('#flash-message').remove()"
                         style="background:none;border:none;cursor:pointer;color:var(--muted-fg);display:flex;padding:0">

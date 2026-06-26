@@ -34,10 +34,17 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $permissions = Permission::select('id', 'name', 'slug')->orderBy('name')->get();
-        $tableNames = config('table_access.tables');
+        try {
+            $permissions = Permission::select('id', 'name', 'slug')->orderBy('name')->get();
+            $tableNames = config('table_access.tables');
 
-        return view('role.create', compact('permissions', 'tableNames'));
+            return view('role.create', compact('permissions', 'tableNames'));
+        } catch (Exception $e) {
+            Log::error('Role Create Function Failed' . $e->getMessage());
+            Session::flash('error', 'Role Create Failed');
+
+            return redirect()->route('role.index');
+        }
     }
 
     /**
@@ -54,7 +61,6 @@ class RoleController extends Controller
             $this->syncRolePermissions($role, $input['permissions'] ?? []);
             Session::flash('success', 'Role created Successfully');
         } catch (Exception $e) {
-
             Log::error('Role Store Function Failed' . $e->getMessage());
             Session::flash('error', 'Role Create Failed');
         }
@@ -105,7 +111,7 @@ class RoleController extends Controller
             Session::flash('success', 'Role Updated Successfully');
         } catch (Exception $e) {
             Log::error('Role Update Function Failed: ' . $e->getMessage());
-            Session::flash('error', 'Role Updated Failed');
+            Session::flash('error', 'Role Updation Failed');
         }
 
         return redirect()->route('role.index');
@@ -121,7 +127,7 @@ class RoleController extends Controller
             Session::flash('success', 'Role Delete Successfully');
         } catch (Exception $e) {
             Log::error('Role Delete Function Failed' . $e->getMessage());
-            Session::flash('error', 'Role Deleted Failed');
+            Session::flash('error', 'Role Deletion Failed');
         }
 
         return redirect()->route('role.index');
