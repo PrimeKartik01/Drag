@@ -15,6 +15,7 @@
                 </div>
 
                 <div class="flex items-center gap-3">
+                    @can('delete', 'builders')
                     <form action="{{ route('builder.bulkDelete') }}" method="POST" id="bulkDeleteForm">
                         @csrf
                         @method('DELETE')
@@ -25,11 +26,14 @@
                             Delete Selected
                         </button>
                     </form>
+                    @endcan
 
+                    @can('create', 'builders')
                     <a href="{{ route('builder.create') }}"
                         class="px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700">
                         Add Builder
                     </a>
+                    @endcan
                 </div>
             </div>
 
@@ -88,16 +92,21 @@
                                     <td class="px-5 py-3.5">
                                         <div class="flex justify-end gap-2">
 
+                                            @can('view', 'builders')
                                             <a href="{{ route('builder.show', $builder->id) }}"
                                                 class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs">
                                                 View
                                             </a>
+                                            @endcan
 
+                                            @can('update', 'builders')
                                             <a href="{{ route('builder.edit', $builder->id) }}"
                                                 class="px-3 py-1.5 rounded-lg bg-green-50 text-green-600 text-xs">
                                                 Edit
                                             </a>
+                                            @endcan
 
+                                            @can('delete', 'builders')
                                             <form action="{{ route('builder.destroy', $builder->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
@@ -107,6 +116,7 @@
                                                     Delete
                                                 </button>
                                             </form>
+                                            @endcan
 
                                         </div>
                                     </td>

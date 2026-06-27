@@ -11,13 +11,12 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Builder;
 
 // Request
+use Illuminate\Http\Request;
 use App\Http\Requests\BuilderStoreRequest;
 use App\Http\Requests\BuilderUpdateRequest;
-use Illuminate\Http\Request;
 
 // Service
 use App\Services\BuilderService;
-
 
 class BuilderController extends Controller
 {
@@ -27,7 +26,6 @@ class BuilderController extends Controller
     public function index(Request $request)
     {
         try {
-
             $builders = Builder::when($request->search, function ($query) use ($request) {
                 $query->where(function ($q) use ($request) {
                     $q->where('name', 'like', '%' . $request->search . '%')
@@ -45,15 +43,12 @@ class BuilderController extends Controller
         }
     }
 
-
-
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         try {
-
             return view('builder.create');
         } catch (Exception $e) {
 
@@ -63,8 +58,6 @@ class BuilderController extends Controller
             return redirect()->route('builder.index');
         }
     }
-
-
 
     /**
      * Store a newly created resource in storage.
@@ -97,7 +90,6 @@ class BuilderController extends Controller
     public function edit(Builder $builder)
     {
         try {
-
             return view('builder.edit', compact('builder'));
         } catch (Exception $e) {
 
@@ -107,8 +99,6 @@ class BuilderController extends Controller
             return redirect()->route('builder.index');
         }
     }
-
-
 
     /**
      * Update the specified resource in storage.
@@ -146,7 +136,6 @@ class BuilderController extends Controller
     public function show(Builder $builder)
     {
         try {
-
             return view('builder.show', compact('builder'));
         } catch (Exception $e) {
 

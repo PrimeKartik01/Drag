@@ -52,7 +52,7 @@
                                     <div class="flex flex-col">
                                         <span class="text-sm font-semibold text-gray-900">{{ $role->name }}</span>
                                         @if($role->description)
-                                            <span class="text-xs text-gray-500 mt-0.5 line-clamp-1 truncate" title="{{ $role->description }}">{{ $role->description }}</span>
+                                            <span class="text-xs t        ext-gray-500 mt-0.5 line-clamp-1 truncate" title="{{ $role->description }}">{{ $role->description }}</span>
                                         @endif
                                     </div>
                                 </td>
