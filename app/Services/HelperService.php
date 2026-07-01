@@ -18,4 +18,24 @@ class HelperService
 
         return null;
     }
+
+    public function generateUniqueSlug($model, $slug, $ignoreId = null)
+    {
+        $original = $slug;
+        $count = 1;
+
+        while (
+            $model::where('slug', $slug)
+            ->when($ignoreId, function ($q) use ($ignoreId) {
+                $q->where('id', '!=', $ignoreId);
+            })
+            ->exists()
+        ) {
+
+            $slug = $original . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
+    }
 }

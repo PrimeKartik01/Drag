@@ -43,8 +43,7 @@
                     SubUser
                 </a>
 
-                <a href="{{ route('role.index') }}"
-                    class="nav-item {{ request()->routeIs('role.*') ? 'active' : '' }}">
+                <a href="{{ route('role.index') }}" class="nav-item {{ request()->routeIs('role.*') ? 'active' : '' }}">
                     <x-icons.user-shield stroke-width="2" />
                     Roles
                 </a>
@@ -53,6 +52,12 @@
                     class="nav-item {{ request()->routeIs('builder.*') ? 'active' : '' }}">
                     <x-icons.builder stroke-width="2" />
                     Builder
+                </a>
+
+                <a href="{{ route('township.index') }}"
+                    class="nav-item {{ request()->routeIs('townships.*') ? 'active' : '' }}">
+                    <x-icons.builder stroke-width="2" />
+                    Township
                 </a>
 
             </div>

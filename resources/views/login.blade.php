@@ -29,8 +29,8 @@
 
         <!-- Heading -->
         <div class="text-center mb-5">
-            <h1 class="text-4xl font-bold">Welcome Back</h1>
-            <p class="text-white/60 mt-2">Login to your owner account</p>
+            <h1 class="text-4xl font-bold">Welcome</h1>
+            <p class="text-white/60 mt-2">Login to your account</p>
         </div>
 
         <form action="{{ route('admin.login') }}" method="POST" class="space-y-3">

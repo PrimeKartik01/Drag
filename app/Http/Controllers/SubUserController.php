@@ -66,7 +66,8 @@ class SubUserController extends Controller
 
     public function edit(SubUser $subuser)
     {
-        return view('subuser.edit', compact('subuser'));
+        $roles = Role::pluck('name', 'id');
+        return view('subuser.edit', compact('subuser', 'roles'));
     }
 
     /**

@@ -8,7 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BuilderController;
 use App\Http\Controllers\SubUserController;
 use App\Http\Controllers\RoleController;
-use App\Models\Builder;
+use App\Http\Controllers\TownshipController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('admin.show');
 Route::post('/', [AuthController::class, 'login'])->name('admin.login');
@@ -42,14 +42,26 @@ Route::middleware('checkauth')->group(function () {
   // Role Route: End
 
   // Builder Route: Start
-  Route::get('/admin/builder/{builder}/show', [BuilderController::class, 'show'])->middleware('permission:view,builder')->name('builder.show');
-  Route::get('/admin/builder/index', [BuilderController::class, 'index'])->middleware('permission:viewAny,builder')->name('builder.index');
-  Route::get('/admin/builder/create', [BuilderController::class, 'create'])->middleware('permission:create,builder')->name('builder.create');
-  Route::post('/admin/builder/store', [BuilderController::class, 'store'])->middleware('permission:create,builder')->name('builder.store');
-  Route::get('/admin/builder/{builder}/edit', [BuilderController::class, 'edit'])->middleware('permission:update,builder')->name('builder.edit');
-  Route::patch('/admin/builder/{builder}/update', [BuilderController::class, 'update'])->middleware('permission:update,builder')->name('builder.update');
-  Route::delete('/admin/builder/{builder}/destroy', [BuilderController::class, 'destroy'])->middleware('permission:delete,builder')->name('builder.destroy');
-  Route::delete('/builder/bulk-delete', [BuilderController::class, 'bulkDelete'])->middleware('permission:delete,builder')->name('builder.bulkDelete');
+  Route::get('/admin/builder/{builder}/show', [BuilderController::class, 'show'])->middleware('permission:view,builders')->name('builder.show');
+  Route::get('/admin/builder/index', [BuilderController::class, 'index'])->middleware('permission:viewAny,builders')->name('builder.index');
+  Route::get('/admin/builder/create', [BuilderController::class, 'create'])->middleware('permission:create,builders')->name('builder.create');
+  Route::post('/admin/builder/store', [BuilderController::class, 'store'])->middleware('permission:create,builders')->name('builder.store');
+  Route::get('/admin/builder/{builder}/edit', [BuilderController::class, 'edit'])->middleware('permission:update,builders')->name('builder.edit');
+  Route::patch('/admin/builder/{builder}/update', [BuilderController::class, 'update'])->middleware('permission:update,builders')->name('builder.update');
+  Route::delete('/admin/builder/{builder}/destroy', [BuilderController::class, 'destroy'])->middleware('permission:delete,builders')->name('builder.destroy');
+  Route::delete('/builder/bulk-delete', [BuilderController::class, 'bulkDelete'])->middleware('permission:delete,builders')->name('builder.bulkDelete');
   // Builder Route: End
 
+  // Township Route: Start
+  Route::get('/admin/township/{township}/show', [TownshipController::class, 'show'])->middleware('permission:view,townships')->name('township.show');
+  Route::get('/admin/township/index', [TownshipController::class, 'index'])->middleware('permission:viewAny,townships')->name('township.index');
+  Route::get('/admin/township/create', [TownshipController::class, 'create'])->middleware('permission:create,townships')->name('township.create');
+  Route::post('/admin/township/store', [TownshipController::class, 'store'])->middleware('permission:create,townships')->name('township.store');
+  Route::get('/admin/township/{township}/edit', [TownshipController::class, 'edit'])->middleware('permission:update,townships')->name('township.edit');
+  Route::patch('/admin/township/{township}/update', [TownshipController::class, 'update'])->middleware('permission:update,townships')->name('township.update');
+  Route::delete('/admin/township/{township}/destroy', [TownshipController::class, 'destroy'])->middleware('permission:delete,townships')->name('township.destroy');
+  Route::delete('/township/bulk-delete', [TownshipController::class, 'bulkDelete'])->middleware('permission:delete,townships')->name('township.bulkDelete');
+  // Township Route: End
+
 });
+          

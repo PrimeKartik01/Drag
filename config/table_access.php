@@ -3,6 +3,7 @@ return [
     'tables' => [
         'subusers',
         'roles',
-        'builders'
+        'builders',
+        'townships'
     ],
 ];
