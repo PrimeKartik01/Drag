@@ -16,10 +16,17 @@ use App\Http\Requests\BuilderStoreRequest;
 use App\Http\Requests\BuilderUpdateRequest;
 
 // Service
-use App\Services\BuilderService;
+use App\Services\HelperService;
 
 class BuilderController extends Controller
 {
+    protected HelperService $helperService;
+
+    public function __construct(HelperService $helperService)
+    {
+        $this->helperService = $helperService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -35,7 +42,6 @@ class BuilderController extends Controller
 
             return view('builder.index', compact('builders'));
         } catch (Exception $e) {
-
             Log::error('Builder Index Function Failed: ' . $e->getMessage());
             Session::flash('error', 'Builder Fetch Failed');
 
@@ -51,7 +57,6 @@ class BuilderController extends Controller
         try {
             return view('builder.create');
         } catch (Exception $e) {
-
             Log::error('Builder Create Function Failed: ' . $e->getMessage());
             Session::flash('error', 'Builder Create Failed');
 
@@ -62,12 +67,15 @@ class BuilderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(BuilderStoreRequest $request, BuilderService $builderService)
+    public function store(BuilderStoreRequest $request)
     {
         try {
             $input = $request->validated();
 
-            $input['slug'] = $builderService->generateUniqueSlug($input['slug']);
+            $input['slug'] = $this->helperService->generateUniqueSlug(
+                Builder::class,
+                $input['slug']
+            );
 
             if ($request->hasFile('photo')) {
                 $input['photo'] = $request->file('photo')->store('builders', 'public');
@@ -77,8 +85,8 @@ class BuilderController extends Controller
 
             Session::flash('success', 'Builder Created Successfully');
         } catch (Exception $e) {
-            Log::error('Store Failed: ' . $e->getMessage());
-            Session::flash('error', 'Something went wrong');
+            Log::error('Builder Store Function Failed: ' . $e->getMessage());
+            Session::flash('error', 'Something went wrong while creating the builder');
         }
 
         return redirect()->route('builder.index');
@@ -103,19 +111,27 @@ class BuilderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(BuilderUpdateRequest $request, Builder $builder, BuilderService $builderService)
+    public function update(BuilderUpdateRequest $request, Builder $builder)
     {
         try {
             $input = $request->validated();
 
-            $input['slug'] = $builderService->generateUniqueSlug(
+            $input['slug'] = $this->helperService->generateUniqueSlug(
+                Builder::class,
                 $input['slug'],
                 $builder->id
             );
 
+
             if ($request->hasFile('photo')) {
+
+                if ($builder->photo && Storage::disk('public')->exists($builder->photo)) {
+                    Storage::disk('public')->delete($builder->photo);
+                }
+
                 $input['photo'] = $request->file('photo')->store('builders', 'public');
             } else {
+
                 $input['photo'] = $builder->photo;
             }
 
@@ -123,8 +139,8 @@ class BuilderController extends Controller
 
             Session::flash('success', 'Builder Updated Successfully');
         } catch (Exception $e) {
-            Log::error('Update Failed: ' . $e->getMessage());
-            Session::flash('error', 'Something went wrong');
+            Log::error('Builder Update Function Failed: ' . $e->getMessage());
+            Session::flash('error', 'Something went wrong while updating the builder');
         }
 
         return redirect()->route('builder.index');
@@ -194,8 +210,8 @@ class BuilderController extends Controller
             Session::flash('success', 'Selected Builders Deleted Successfully');
         } catch (Exception $e) {
 
-            Log::error('Bulk Delete Failed: ' . $e->getMessage());
-            Session::flash('error', 'Bulk Delete Failed');
+            Log::error('Builder Bulk Delete Function Failed: ' . $e->getMessage());
+            Session::flash('error', 'Builder Bulk Delete Failed');
         }
 
         return redirect()->route('builder.index');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
@@ -14,7 +15,6 @@ use App\Http\Requests\SubUserUpdateRequest;
 // Model
 use App\Models\Role;
 use App\Models\SubUser;
-use Illuminate\Support\Facades\Log;
 
 class SubUserController extends Controller
 {
@@ -24,16 +24,26 @@ class SubUserController extends Controller
      */
     public function index(Request $request)
     {
-        $subusers = SubUser::with('role')
-            ->when($request->search, function ($query) use ($request) {
+        try {
+            $subusers = SubUser::with('role')
+                ->when($request->search, function ($query) use ($request) {
 
-                $query->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('email', 'like', '%' . $request->search . '%');
-            })
-            ->latest()
-            ->paginate(10);
+                    $query->where(function ($q) use ($request) {
 
-        return view('subuser.index', compact('subusers'));
+                        $q->where('name', 'like', '%' . $request->search . '%')
+                            ->orWhere('email', 'like', '%' . $request->search . '%');
+                    });
+                })
+                ->latest()
+                ->paginate(10);
+
+            return view('subuser.index', compact('subusers'));
+        } catch (Exception $e) {
+            Log::error('Subuser Index Function Failed: ' . $e->getMessage());
+            Session::flash('error', 'Subuser Fetch Failed');
+
+            return redirect()->route('admin.dashboard');
+        }
     }
 
 
@@ -42,8 +52,16 @@ class SubUserController extends Controller
      */
     public function create()
     {
-        $roles = Role::pluck('name', 'id');
-        return view('subuser.create', compact('roles'));
+        try {
+            $roles = Role::pluck('name', 'id');
+
+            return view('subuser.create', compact('roles'));
+        } catch (Exception $e) {
+            Log::error('Subuser Create Function Failed: ' . $e->getMessage());
+            Session::flash('error', 'Subuser Create Failed');
+
+            return redirect()->route('subuser.index');
+        }
     }
 
     /**
@@ -57,17 +75,25 @@ class SubUserController extends Controller
             SubUser::create($input);
             Session::flash('success', 'Subuser Created Successfully.');
         } catch (Exception $e) {
-            Log::error('Subuser Create Failed' . $e->getMessage());
+            Log::error('Subuser Store Function Failed: ' . $e->getMessage());
             Session::flash('error', 'Something went wrong while creating the subuser');
         }
 
-        return redirect()->route('subuser.create');
+        return redirect()->route('subuser.index');
     }
 
     public function edit(SubUser $subuser)
     {
-        $roles = Role::pluck('name', 'id');
-        return view('subuser.edit', compact('subuser', 'roles'));
+        try {
+            $roles = Role::pluck('name', 'id');
+
+            return view('subuser.edit', compact('subuser', 'roles'));
+        } catch (Exception $e) {
+            Log::error('Subuser Edit Function Failed: ' . $e->getMessage());
+            Session::flash('error', 'Subuser Edit Failed');
+
+            return redirect()->route('subuser.index');
+        }
     }
 
     /**
@@ -86,14 +112,12 @@ class SubUserController extends Controller
 
             $subuser->update($input);
             Session::flash('success', 'Subuser Updated Successfully.');
-
-            return redirect()->route('subuser.index');
         } catch (Exception $e) {
-            Log::error('Subuser Update Failed: ' . $e->getMessage());
+            Log::error('Subuser Update Function Failed: ' . $e->getMessage());
             Session::flash('error', 'Something went wrong while updating the subuser');
-
-            return redirect()->route('subuser.index');
         }
+
+        return redirect()->route('subuser.index');
     }
 
     /**
@@ -105,8 +129,8 @@ class SubUserController extends Controller
             $subuser->delete();
             Session::flash('success', 'Subuser Deleted Successfully.');
         } catch (Exception $e) {
-            Log::error('Subuser Delete Function Failed' . $e->getMessage());
-            Session::flash('error', ' Subuser Deleted Failed');
+            Log::error('Subuser Delete Function Failed: ' . $e->getMessage());
+            Session::flash('error', ' Subuser Deletion Failed');
         }
 
         return redirect()->route('subuser.index');
@@ -114,8 +138,15 @@ class SubUserController extends Controller
 
     public function status()
     {
-        $subusers = SubUser::select('id', 'last_activity_at')->get();
+        try {
 
-        return response()->json($subusers);
+            $subusers = SubUser::select('id', 'last_activity_at')->get();
+
+            return response()->json($subusers);
+        } catch (Exception $e) {
+            Log::error('Subuser Status Function Failed: ' . $e->getMessage());
+
+            return response()->json([], 500);
+        }
     }
 }
