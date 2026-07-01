@@ -28,6 +28,9 @@ class TownshipController extends Controller
         $this->helperService = $helperService;
     }
 
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
         try {
@@ -46,15 +49,16 @@ class TownshipController extends Controller
 
             return view('township.index', compact('townships'));
         } catch (Exception $e) {
-
             Log::error('Township Index Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Township Fetch Failed');
 
-            return redirect()->route('township.index');
+            return redirect()->route('admin.dashboard');
         }
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         try {
@@ -64,15 +68,16 @@ class TownshipController extends Controller
 
             return view('township.create', compact('builders', 'cities'));
         } catch (Exception $e) {
-
             Log::error('Township Create Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Township Create Failed');
 
             return redirect()->route('township.index');
         }
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(TownshipRequest $request)
     {
         try {
@@ -88,32 +93,16 @@ class TownshipController extends Controller
 
             Session::flash('success', 'Township Created Successfully');
         } catch (Exception $e) {
-
             Log::error('Township Store Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Something went wrong');
         }
 
         return redirect()->route('township.index');
     }
 
-    public function show(Township $township)
-    {
-        try {
-
-            $township->load(['builder', 'city']);
-
-            return view('township.show', compact('township'));
-        } catch (Exception $e) {
-
-            Log::error('Township Show Failed: ' . $e->getMessage());
-
-            Session::flash('error', 'Township Details Failed');
-
-            return redirect()->route('township.index');
-        }
-    }
-
+    /**
+     * Show the form for editing the specified resource.
+     */
     public function edit(Township $township)
     {
         try {
@@ -123,15 +112,16 @@ class TownshipController extends Controller
 
             return view('township.edit', compact('township', 'builders', 'cities'));
         } catch (Exception $e) {
-
             Log::error('Township Edit Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Township Edit Failed');
 
             return redirect()->route('township.index');
         }
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(TownshipUpdateRequest $request, Township $township)
     {
         try {
@@ -148,15 +138,34 @@ class TownshipController extends Controller
 
             Session::flash('success', 'Township Updated Successfully');
         } catch (Exception $e) {
-
             Log::error('Township Update Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Something went wrong');
         }
 
         return redirect()->route('township.index');
     }
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(Township $township)
+    {
+        try {
+
+            $township->load(['builder', 'city']);
+
+            return view('township.show', compact('township'));
+        } catch (Exception $e) {
+            Log::error('Township Show Failed: ' . $e->getMessage());
+            Session::flash('error', 'Township Details Failed');
+
+            return redirect()->route('township.index');
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Township $township)
     {
         try {
@@ -165,15 +174,16 @@ class TownshipController extends Controller
 
             Session::flash('success', 'Township Deleted Successfully');
         } catch (Exception $e) {
-
             Log::error('Township Delete Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Township Delete Failed');
         }
 
         return redirect()->route('township.index');
     }
 
+    /**
+     *  Bulk Delete
+     */
     public function bulkDelete(Request $request)
     {
         try {
@@ -191,9 +201,7 @@ class TownshipController extends Controller
 
             Session::flash('success', 'Selected Townships Deleted Successfully');
         } catch (Exception $e) {
-
             Log::error('Township Bulk Delete Failed: ' . $e->getMessage());
-
             Session::flash('error', 'Bulk Delete Failed');
         }
 

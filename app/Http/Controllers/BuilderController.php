@@ -206,7 +206,7 @@ class BuilderController extends Controller
 
     /**
      *  Bulk Delete
-    */
+     */
     public function bulkDelete(Request $request)
     {
         try {
