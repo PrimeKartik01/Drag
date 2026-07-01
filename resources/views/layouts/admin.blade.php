@@ -56,7 +56,7 @@
 
                 <a href="{{ route('township.index') }}"
                     class="nav-item {{ request()->routeIs('townships.*') ? 'active' : '' }}">
-                    <x-icons.builder stroke-width="2" />
+                    <x-icons.township stroke-width="2" />
                     Township
                 </a>
 

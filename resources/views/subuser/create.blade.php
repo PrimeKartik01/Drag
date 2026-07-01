@@ -21,13 +21,13 @@
 
             <div class="mb-6">
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Add Sub User</h1>
-                <p class="mt-1 text-sm text-gray-500">Create a new user account for your real estate system.</p>
+                <p class="mt-1 text-sm text-gray-500">Create a new sub user account for your real estate system.</p>
             </div>
 
 
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
 
-                <form action="{{ route('subuser.store') }}" method="POST" class="space-y-5">
+                <form action="{{ route('subuser.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
 
                     @csrf
 
@@ -61,6 +61,26 @@
                                 placeholder="+91" maxlength="10"
                                 class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
                             @error('phone')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Special ID</label>
+                            <input type="text" name="special_id" value="{{ old('special_id') }}" placeholder="Enter unique ID"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
+                            @error('special_id')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Photo</label>
+                            <input type="file" name="photo" accept="image/*"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
+                            @error('photo')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>

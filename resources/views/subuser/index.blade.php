@@ -7,7 +7,7 @@
             <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
 
                 <div>
-                    <p class="text-xs font-bold tracking-widest uppercase text-indigo-600 mb-1">Users Management</p>
+                    <p class="text-xs font-bold tracking-widest uppercase text-indigo-600 mb-1">Sub User Management</p>
                     <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">Sub User
                         Directory</h1>
                     <p class="mt-1.5 text-sm text-gray-500">Manage all sub users of your real estate system</p>
@@ -113,10 +113,15 @@
 
                                     <td class="px-4 py-3.5">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center">
-                                                <span
-                                                    class="text-xs font-bold text-white">{{ strtoupper(substr($user->name, 0, 2)) }}</span>
-                                            </div>
+                                            @if ($user->photo)
+                                                <img src="{{ asset('storage/' . $user->photo) }}"
+                                                    class="w-9 h-9 rounded-lg object-cover border border-gray-200">
+                                            @else
+                                                <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center">
+                                                    <span
+                                                        class="text-xs font-bold text-white">{{ strtoupper(substr($user->name, 0, 2)) }}</span>
+                                                </div>
+                                            @endif
                                             <div>
                                                 <p class="text-sm font-semibold text-gray-900">{{ $user->name }}</p>
                                                 <p class="text-xs text-gray-400">{{ $user->email }}</p>
@@ -157,6 +162,13 @@
 
                                     <td class="px-5 py-3.5">
                                         <div class="flex justify-end gap-2">
+
+                                            @can('view', 'subusers')
+                                                <a href="{{ route('subuser.show', $user->id) }}"
+                                                    class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs">
+                                                     <x-icons.eye class="w-3.5 h-3.5" />
+                                                </a>
+                                            @endcan
 
                                             <a href="{{ route('subuser.edit', $user->id) }}"
                                                 class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-xs">
@@ -211,7 +223,7 @@
                 document.getElementById('userTable').classList.remove('hidden');
 
             });
-            
+
             window.addEventListener('load', function() {
                 document.getElementById('tableSkeleton').style.display = 'none';
                 document.getElementById('userTable').classList.remove('hidden');

@@ -20,6 +20,8 @@ class SubUserStoreRequest extends FormRequest
             'email'       => 'required|email|unique:subusers,email',
             'phone'       => 'required|digits:10',
             'password'    => 'required|min:6|confirmed',
+            'special_id'  => 'nullable|string|unique:subusers,special_id',
+            'photo'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4000',
             'role_id'     => 'nullable|exists:roles,id',
         ];
     }

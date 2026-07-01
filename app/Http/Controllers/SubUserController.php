@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 // Request
 use Illuminate\Http\Request;
@@ -69,12 +70,25 @@ class SubUserController extends Controller
      */
     public function store(SubUserStoreRequest $request)
     {
+        $newPhoto = null;
+
         try {
             $input = $request->validated();
             $input['password'] = Hash::make($input['password']);
+
+            if ($request->hasFile('photo')) {
+                $newPhoto = $request->file('photo')->store('subusers', 'public');
+                $input['photo'] = $newPhoto;
+            }
+
             SubUser::create($input);
             Session::flash('success', 'Subuser Created Successfully.');
         } catch (Exception $e) {
+            // Delete uploaded image if database insert fails
+            if ($newPhoto && Storage::disk('public')->exists($newPhoto)) {
+                Storage::disk('public')->delete($newPhoto);
+            }
+
             Log::error('Subuser Store Function Failed: ' . $e->getMessage());
             Session::flash('error', 'Something went wrong while creating the subuser');
         }
@@ -110,9 +124,30 @@ class SubUserController extends Controller
                 unset($input['password']);
             }
 
+            $oldPhoto = $subuser->photo;
+            $newPhoto = null;
+
+            if ($request->hasFile('photo')) {
+                $newPhoto = $request->file('photo')->store('subusers', 'public');
+                $input['photo'] = $newPhoto;
+            } else {
+                $input['photo'] = $oldPhoto;
+            }
+
             $subuser->update($input);
+
+            // Delete old photo only after successful DB update
+            if ($newPhoto && $oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
+                Storage::disk('public')->delete($oldPhoto);
+            }
+
             Session::flash('success', 'Subuser Updated Successfully.');
         } catch (Exception $e) {
+            // Rollback newly uploaded photo if DB update fails
+            if (isset($newPhoto) && $newPhoto && Storage::disk('public')->exists($newPhoto)) {
+                Storage::disk('public')->delete($newPhoto);
+            }
+
             Log::error('Subuser Update Function Failed: ' . $e->getMessage());
             Session::flash('error', 'Something went wrong while updating the subuser');
         }
@@ -123,7 +158,7 @@ class SubUserController extends Controller
     /**
      * Delete the Sub User
      */
-    public function destroy(SubUser $subuser)
+    public function delete(SubUser $subuser)
     {
         try {
             $subuser->delete();
@@ -134,6 +169,11 @@ class SubUserController extends Controller
         }
 
         return redirect()->route('subuser.index');
+    }
+
+    public function show(SubUser $subuser)
+    {
+        return view('subuser.show', compact('subuser'));
     }
 
     public function status()

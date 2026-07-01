@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('subusers', function (Blueprint $table) {
             $table->id();
+            $table->string('special_id')->unique()->nullable();
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
@@ -21,6 +22,7 @@ return new class extends Migration
                   ->constrained('roles')
                   ->nullOnDelete();
             $table->string('phone')->nullable();
+            $table->string('photo')->nullable();
             $table->string('session_id')->nullable();
             $table->timestamp('last_activity_at')->nullable();
             $table->timestamps();

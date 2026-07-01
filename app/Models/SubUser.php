@@ -19,6 +19,8 @@ class SubUser extends Authenticatable
         'password',
         'role_id',
         'phone',
+        'special_id',
+        'photo',
         'last_activity_at',
         'session_id',
     ];

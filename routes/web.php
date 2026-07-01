@@ -23,12 +23,13 @@ Route::middleware('checkauth')->group(function () {
   Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
   // Subuser Route: Start
-  Route::get('/admin/index', [SubUserController::class, 'index'])->middleware('permission:viewAny,subusers')->name('subuser.index');
-  Route::get('/admin/create', [SubUserController::class, 'create'])->middleware('permission:create,subusers')->name('subuser.create');
-  Route::post('/admin/store', [SubUserController::class, 'store'])->middleware('permission:create,subusers')->name('subuser.store');
+  Route::get('/admin/subuser/{subuser}/show', [SubUserController::class, 'show'])->middleware('permission:view,subusers')->name('subuser.show');
+  Route::get('/admin/subuser/index', [SubUserController::class, 'index'])->middleware('permission:viewAny,subusers')->name('subuser.index');
+  Route::get('/admin/subuser/create', [SubUserController::class, 'create'])->middleware('permission:create,subusers')->name('subuser.create');
+  Route::post('/admin/subuser/store', [SubUserController::class, 'store'])->middleware('permission:create,subusers')->name('subuser.store');
   Route::get('/admin/subuser/{subuser}/edit', [SubUserController::class, 'edit'])->middleware('permission:update,subusers')->name('subuser.edit');
   Route::patch('/admin/subuser/{subuser}/update', [SubUserController::class, 'update'])->middleware('permission:update,subusers')->name('subuser.update');
-  Route::delete('/admin/subuser/{subuser}/delete', [SubUserController::class, 'destroy'])->middleware('permission:delete,subusers')->name('subuser.delete');
+  Route::delete('/admin/subuser/{subuser}/delete', [SubUserController::class, 'delete'])->middleware('permission:delete,subusers')->name('subuser.delete');
   Route::get('/subuser/status', [SubUserController::class, 'status'])->middleware('permission:update,subusers')->name('subuser.status');
   // Subuser Route: End
 
