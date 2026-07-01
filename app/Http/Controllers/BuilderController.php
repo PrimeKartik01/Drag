@@ -45,7 +45,7 @@ class BuilderController extends Controller
             Log::error('Builder Index Function Failed: ' . $e->getMessage());
             Session::flash('error', 'Builder Fetch Failed');
 
-            return redirect()->route('builder.index');
+            return redirect()->route('admin.dashboard');
         }
     }
 
@@ -69,7 +69,10 @@ class BuilderController extends Controller
      */
     public function store(BuilderStoreRequest $request)
     {
+        $newPhoto = null;
+
         try {
+
             $input = $request->validated();
 
             $input['slug'] = $this->helperService->generateUniqueSlug(
@@ -78,13 +81,19 @@ class BuilderController extends Controller
             );
 
             if ($request->hasFile('photo')) {
-                $input['photo'] = $request->file('photo')->store('builders', 'public');
+                $newPhoto = $request->file('photo')->store('builders', 'public');
+                $input['photo'] = $newPhoto;
             }
 
             Builder::create($input);
 
             Session::flash('success', 'Builder Created Successfully');
         } catch (Exception $e) {
+            // Delete uploaded image if database insert fails
+            if ($newPhoto && Storage::disk('public')->exists($newPhoto)) {
+                Storage::disk('public')->delete($newPhoto);
+            }
+
             Log::error('Builder Store Function Failed: ' . $e->getMessage());
             Session::flash('error', 'Something went wrong while creating the builder');
         }
@@ -114,6 +123,7 @@ class BuilderController extends Controller
     public function update(BuilderUpdateRequest $request, Builder $builder)
     {
         try {
+
             $input = $request->validated();
 
             $input['slug'] = $this->helperService->generateUniqueSlug(
@@ -122,23 +132,32 @@ class BuilderController extends Controller
                 $builder->id
             );
 
+            $oldPhoto = $builder->photo;
+            $newPhoto = null;
 
             if ($request->hasFile('photo')) {
-
-                if ($builder->photo && Storage::disk('public')->exists($builder->photo)) {
-                    Storage::disk('public')->delete($builder->photo);
-                }
-
-                $input['photo'] = $request->file('photo')->store('builders', 'public');
+                $newPhoto = $request->file('photo')->store('builders', 'public');
+                $input['photo'] = $newPhoto;
             } else {
 
-                $input['photo'] = $builder->photo;
+                $input['photo'] = $oldPhoto;
             }
 
             $builder->update($input);
 
+            // Delete old photo only after successful DB update
+            if ($newPhoto && $oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
+                Storage::disk('public')->delete($oldPhoto);
+            }
+
             Session::flash('success', 'Builder Updated Successfully');
         } catch (Exception $e) {
+
+            // Rollback newly uploaded photo if DB update fails
+            if (isset($newPhoto) && $newPhoto && Storage::disk('public')->exists($newPhoto)) {
+                Storage::disk('public')->delete($newPhoto);
+            }
+
             Log::error('Builder Update Function Failed: ' . $e->getMessage());
             Session::flash('error', 'Something went wrong while updating the builder');
         }
@@ -185,15 +204,19 @@ class BuilderController extends Controller
     }
 
 
-    // Bulk Delete
+    /**
+     *  Bulk Delete
+    */
     public function bulkDelete(Request $request)
     {
         try {
 
-            $ids = explode(',', $request->ids);
+            $ids = array_filter(explode(',', $request->ids));
 
             if (empty($ids)) {
+
                 Session::flash('error', 'No builders selected');
+
                 return back();
             }
 

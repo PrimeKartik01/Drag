@@ -24,9 +24,16 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::with('permissions')->get();
+        try {
+            $roles = Role::with('permissions')->get();
 
-        return view('role.index', compact('roles'));
+            return view('role.index', compact('roles'));
+        } catch (Exception $e) {
+            Log::error('Role Index Function Failed: ' . $e->getMessage());
+            Session::flash('error', 'Role Fetch Failed');
+
+            return redirect()->route('admin.dashboard');
+        }
     }
 
     /**
@@ -40,7 +47,7 @@ class RoleController extends Controller
 
             return view('role.create', compact('permissions', 'tableNames'));
         } catch (Exception $e) {
-            Log::error('Role Create Function Failed' . $e->getMessage());
+            Log::error('Role Create Function Failed: ' . $e->getMessage());
             Session::flash('error', 'Role Create Failed');
 
             return redirect()->route('role.index');
@@ -61,8 +68,8 @@ class RoleController extends Controller
             $this->syncRolePermissions($role, $input['permissions'] ?? []);
             Session::flash('success', 'Role created Successfully');
         } catch (Exception $e) {
-            Log::error('Role Store Function Failed' . $e->getMessage());
-            Session::flash('error', 'Role Create Failed');
+            Log::error('Role Store Function Failed: ' . $e->getMessage());
+            Session::flash('error', 'Something went wrong while creating the role');
         }
 
         return redirect()->route('role.index');
@@ -111,7 +118,7 @@ class RoleController extends Controller
             Session::flash('success', 'Role Updated Successfully');
         } catch (Exception $e) {
             Log::error('Role Update Function Failed: ' . $e->getMessage());
-            Session::flash('error', 'Role Updation Failed');
+            Session::flash('error', 'Something went wrong while updating the role');
         }
 
         return redirect()->route('role.index');
@@ -126,7 +133,7 @@ class RoleController extends Controller
             $role->delete();
             Session::flash('success', 'Role Delete Successfully');
         } catch (Exception $e) {
-            Log::error('Role Delete Function Failed' . $e->getMessage());
+            Log::error('Role Delete Function Failed: ' . $e->getMessage());
             Session::flash('error', 'Role Deletion Failed');
         }
 
