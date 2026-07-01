@@ -219,7 +219,7 @@
                                             </a>
 
 
-                                            <form action="{{ route('township.destroy', $township->id) }}" method="POST">
+                                            <form action="{{ route('township.delete', $township->id) }}" method="POST">
 
                                                 @csrf
                                                 @method('DELETE')

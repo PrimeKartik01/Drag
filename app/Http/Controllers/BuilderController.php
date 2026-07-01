@@ -184,7 +184,7 @@ class BuilderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Builder $builder)
+    public function delete(Builder $builder)
     {
         try {
 

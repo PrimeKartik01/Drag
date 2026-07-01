@@ -48,7 +48,7 @@ Route::middleware('checkauth')->group(function () {
   Route::post('/admin/builder/store', [BuilderController::class, 'store'])->middleware('permission:create,builders')->name('builder.store');
   Route::get('/admin/builder/{builder}/edit', [BuilderController::class, 'edit'])->middleware('permission:update,builders')->name('builder.edit');
   Route::patch('/admin/builder/{builder}/update', [BuilderController::class, 'update'])->middleware('permission:update,builders')->name('builder.update');
-  Route::delete('/admin/builder/{builder}/destroy', [BuilderController::class, 'destroy'])->middleware('permission:delete,builders')->name('builder.destroy');
+  Route::delete('/admin/builder/{builder}/delete', [BuilderController::class, 'delete'])->middleware('permission:delete,builders')->name('builder.delete');
   Route::delete('/builder/bulk-delete', [BuilderController::class, 'bulkDelete'])->middleware('permission:delete,builders')->name('builder.bulkDelete');
   // Builder Route: End
 
@@ -59,7 +59,7 @@ Route::middleware('checkauth')->group(function () {
   Route::post('/admin/township/store', [TownshipController::class, 'store'])->middleware('permission:create,townships')->name('township.store');
   Route::get('/admin/township/{township}/edit', [TownshipController::class, 'edit'])->middleware('permission:update,townships')->name('township.edit');
   Route::patch('/admin/township/{township}/update', [TownshipController::class, 'update'])->middleware('permission:update,townships')->name('township.update');
-  Route::delete('/admin/township/{township}/destroy', [TownshipController::class, 'destroy'])->middleware('permission:delete,townships')->name('township.destroy');
+  Route::delete('/admin/township/{township}/delete', [TownshipController::class, 'delete'])->middleware('permission:delete,townships')->name('township.delete');
   Route::delete('/township/bulk-delete', [TownshipController::class, 'bulkDelete'])->middleware('permission:delete,townships')->name('township.bulkDelete');
   // Township Route: End
 

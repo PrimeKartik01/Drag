@@ -166,7 +166,7 @@ class TownshipController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Township $township)
+    public function delete(Township $township)
     {
         try {
 

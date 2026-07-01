@@ -107,7 +107,7 @@
                                             @endcan
 
                                             @can('delete', 'builders')
-                                            <form action="{{ route('builder.destroy', $builder->id) }}" method="POST">
+                                            <form action="{{ route('builder.delete', $builder->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
 
